@@ -1,0 +1,17 @@
+*{
+    background-image:url(../multimedia/img/ruleta.png);
+    /* height: 100%; */ /* Eliminado para prevenir scroll */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* No se requieren cambios adicionales */
+
+/* Eliminar estilos para .draggable-image */
+/*
+.draggable-image {
+    width: 100px;
+    height: 100px;
+    cursor: grab;    position: absolute;    top: 20px;    left: 20px;}*/body {    overflow: hidden;}

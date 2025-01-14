@@ -65,6 +65,10 @@ document.onkeydown = (e) => {
     if (popupText && e.key === "Enter") {
         window.location.href = '../html/cartas.html';
     }
+    // Add navigation on Enter when popupText1 is shown
+    if (popupText1 && e.key === "Enter") {
+        window.location.href = '../html/ruleta.html';
+    }
 };
 
 document.onkeyup = (e) => {
@@ -100,6 +104,7 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 let popupText = false;
+let popupText1 = false;
 
 function canvasMovement(){
     clearCanvas();
@@ -120,6 +125,16 @@ function canvasMovement(){
         context.fillText("quieres jugar?", 200, 500);
         context.fillStyle = "white";
         context.fillText("PRESS Enter", 200, 550);
+    }
+    
+    if (popupText1) {
+        context.fillStyle = "black";
+        context.fillRect(1300, 350, 205, 120);
+        context.font = "30px Arial";
+        context.fillStyle = "white";
+        context.fillText("La tricolor?", 1310, 385);
+        context.fillStyle = "white";
+        context.fillText("PRESS Enter", 1310, 385+50);
     }
     
 }
@@ -173,6 +188,14 @@ function isColliding(x, y, size, hitboxes) {
                 popupText = true;
             } else if (!collision) {
                 popupText = false;
+            }
+        }
+        if (hitbox === hitbox1) {
+            console.log(`Hitbox1 collision: ${collision}`);
+            if (collision && !popupText1) {
+                popupText1 = true;
+            } else if (!collision) {
+                popupText1 = false;
             }
         }
         return collision;

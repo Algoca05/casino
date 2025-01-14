@@ -115,29 +115,29 @@ function canvasMovement(){
 }
 // Define the hitbox coordinates
 const hitbox1 = {
-    x1: 0,
-    y1: 135,
-    x2: 700,
-    y2: 150
+    x1: 1100,
+    y1: 170,
+    x2: 1900,
+    y2: 700
 };
 // Add a second hitbox
 const hitbox2 = {
-    x1: 635,
-    y1: 500,
-    x2: 0, // Adjust as needed for width
-    y2: 535
+    x1: 0,
+    y1: 170,
+    x2: 820, // Adjust as needed for width
+    y2: 670
 };
 const hitbox3 = {
     x1: 0,
-    y1: 0,
-    x2: 0, // Adjust as needed for width
-    y2: 0
+    y1: 170,
+    x2: 880, // Adjust as needed for width
+    y2: 250
 };
 const hitbox4 = {
-    x1: 0,
-    y1: 0,
-    x2: 0, // Set x2 greater than x1 to define a width
-    y2: 0
+    x1: 1050,
+    y1: 170,
+    x2: 2000, // Set x2 greater than x1 to define a width
+    y2: 190
 };
 
 // Add debug logs for hitbox4
