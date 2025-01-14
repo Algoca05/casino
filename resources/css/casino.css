@@ -1,0 +1,12 @@
+*{
+    background-image: url(../multimedia/img/casino.png);
+    /* height: 100%; */ /* Eliminado para prevenir scroll */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+body {
+    overflow: hidden;
+}
