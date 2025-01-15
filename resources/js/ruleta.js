@@ -22,19 +22,6 @@ class CanvasImage {
         this.value = value; // Añadir propiedad value
     }
 
-    draw() {
-        context.drawImage(this.img, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
-        
-        // Configurar el estilo del texto
-        context.font = `${this.size / 8}px Arial`;
-        context.fillStyle = 'black';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        
-        // Dibujar el valor en una posición más arriba de la imagen
-        context.fillText(this.value, this.x -3, this.y -25);
-    }
-
     isPointInside(px, py) {
         return px >= this.x - this.size / 2 && px <= this.x + this.size / 2 &&
                py >= this.y - this.size / 2 && py <= this.y + this.size / 2;
@@ -43,15 +30,17 @@ class CanvasImage {
 
 // Definir las 9 imágenes con sus coordenadas y valores
 const imagesData = [
-    { src: '../multimedia/img/color/amarillo.png', x: 995 + 4 * 92, y: 825, value: 10 },
-    { src: '../multimedia/img/color/azul.png', x: 995 + 1 * 92, y: 825, value: 20 },
-    { src: '../multimedia/img/color/granate.png', x: 995 + 7 * 92, y: 825, value: 30 },
-    { src: '../multimedia/img/color/lila.png', x: 995 + 8 * 92, y: 825, value: 40 },
-    { src: '../multimedia/img/color/naranja.png', x: 995 + 5 * 92, y: 825, value: 50 },
-    { src: '../multimedia/img/color/negro.png', x: 995 + 2 * 92, y: 825, value: 60 },
-    { src: '../multimedia/img/color/rojo.png', x: 995 + 0 * 92, y: 825, value: 70 },
-    { src: '../multimedia/img/color/rosa.png', x: 995 + 6 * 92, y: 825, value: 80 },
-    { src: '../multimedia/img/color/verde.png', x: 995 + 3 * 92, y: 825, value: 90 }
+    { src: '../multimedia/img/color/amarillo.png', x: 995 + 4 * 92, y: 805, value: 10 },
+    { src: '../multimedia/img/color/azul.png', x: 995 + 1 * 92, y: 805, value: 20 },
+    { src: '../multimedia/img/color/granate.png', x: 995 + 7 * 92, y: 805, value: 30 },
+    { src: '../multimedia/img/color/lila.png', x: 995 + 8 * 92, y: 805, value: 40 },
+    { src: '../multimedia/img/color/naranja.png', x: 995 + 5 * 92, y: 805, value: 50 },
+    { src: '../multimedia/img/color/negro.png', x: 995 + 2 * 92, y: 805, value: 60 },
+    { src: '../multimedia/img/color/rojo.png', x: 995 + 0 * 92, y: 805, value: 70 },
+    { src: '../multimedia/img/color/rosa.png', x: 995 + 6 * 92, y: 805, value: 80 },
+    { src: '../multimedia/img/color/verde.png', x: 995 + 3 * 92, y: 805, value: 90 },
+    // Add Clear Button Image Data
+    { src: '../multimedia/img/X.png', x: 900, y: 780, value: 'clear' } // Set desired coordinates
 ];
 
 // Array para almacenar objetos CanvasImage
@@ -63,12 +52,6 @@ let dragOffsetX = 0;
 let dragOffsetY = 0;
 let draggedImage = null;
 
-// Función para dibujar todas las imágenes
-function drawAll() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    canvasImages.forEach(img => img.draw());
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     // Inicializar canvas y context
     canvas = document.getElementById('canvas');
@@ -78,12 +61,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Crear y agregar las imágenes al array canvasImages
     imagesData.forEach(data => {
-        let canvasImg = new CanvasImage(data.src, data.x, data.y, IMAGE_SIZE, true, data.value); // Pasar el valor
+        const size = (data.value === 'clear') ? 60 : IMAGE_SIZE; // Set smaller size for clear button
+        let canvasImg = new CanvasImage(data.src, data.x, data.y, size, true, data.value); // Pasar el valor
         canvasImages.push(canvasImg);
     });
 
-    // Dibujar las 9 imágenes en sus coordenadas con tamaño fijo
-    drawAll();
+    // Función para dibujar en el canvas
+    function draw() {
+        // Limpiar el canvas
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Dibujar cada imagen
+        canvasImages.forEach(img => {
+            context.drawImage(img.img, img.x - img.size / 2, img.y - img.size / 2, img.size, img.size);
+        });
+
+        requestAnimationFrame(draw);
+    }
+
+    // Iniciar el ciclo de dibujo
+    draw();
 
     // Manejar eventos de mouse para drag & drop
     canvas.addEventListener('mousedown', (e) => {
@@ -94,12 +91,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Iterar desde arriba hacia abajo para seleccionar la imagen superior
         for (let i = canvasImages.length - 1; i >= 0; i--) {
             if (canvasImages[i].isPointInside(x, y)) {
+                const clickedImage = canvasImages[i];
+                if (clickedImage.value === 'clear') {
+                    // Si se hace clic en el botón de limpiar
+                    canvasImages = canvasImages.filter(img => img.isOriginal || img.value === 'clear');
+                    console.log('All dragged images have been removed.');
+                    break;
+                }
+
                 // Verificar si la imagen es original
-                if (canvasImages[i].isOriginal) {
+                if (clickedImage.isOriginal) {
                     // Crear una copia de la imagen con el mismo valor
-                    let copiedImage = new CanvasImage(canvasImages[i].img.src, x, y, IMAGE_SIZE, false, canvasImages[i].value); // isOriginal = false
+                    let copiedImage = new CanvasImage(clickedImage.img.src, x, y, IMAGE_SIZE, false, clickedImage.value); // isOriginal = false
                     canvasImages.push(copiedImage);
-                    console.log(`Imagen copiada: ${canvasImages[i].img.src} en X: ${x}, Y: ${y} con Valor: ${canvasImages[i].value}`);
+                    console.log(`Imagen copiada: ${clickedImage.img.src} en X: ${x}, Y: ${y} con Valor: ${clickedImage.value}`);
 
                     // Iniciar el arrastre de la copia
                     isDragging = true;
@@ -107,8 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     dragOffsetX = x - copiedImage.x;
                     dragOffsetY = y - copiedImage.y;
 
-                    // Redibujar todas las imágenes
-                    drawAll();
                 }
                 break;
             }
@@ -123,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isDragging && draggedImage) {
             draggedImage.x = x - dragOffsetX;
             draggedImage.y = y - dragOffsetY;
-            drawAll();
         }
 
         // Actualizar coordenadas del ratón
@@ -142,6 +144,16 @@ document.addEventListener('DOMContentLoaded', () => {
         isDragging = false;
         draggedImage = null;
     });
+
+    // Add event listener for the clear button
+    const clearButton = document.getElementById('clearButton');
+    if (clearButton) {
+        clearButton.addEventListener('click', () => {
+            // Filtrar out dragged images (isOriginal === false)
+            canvasImages = canvasImages.filter(img => img.isOriginal);
+            console.log('All dragged images have been removed.');
+        });
+    }
 
     // Opcional: Manejar otros eventos si es necesario
 });
