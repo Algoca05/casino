@@ -115,7 +115,8 @@ function canvasMovement(){
     if (d) img = imgD;
     
     context.drawImage(img, personajeX, personajeY, size, size);
-    drawHitboxes();
+    //dibujar hitboxes
+    // drawHitboxes();
 
     if (popupText) {
         context.fillStyle = "black";
@@ -190,7 +191,7 @@ function isColliding(x, y, size, hitboxes) {
                 popupText = false;
             }
         }
-        if (hitbox === hitbox1) {
+        if (hitbox === hitbox1 || hitbox === hitbox2 || hitbox === hitbox3) {
             console.log(`Hitbox1 collision: ${collision}`);
             if (collision && !popupText1) {
                 popupText1 = true;

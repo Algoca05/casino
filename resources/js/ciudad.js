@@ -71,6 +71,8 @@ document.onkeydown = (e) => {
     if (e.key === "d" || e.key === "ArrowRight" || e.key === "D") {
         d = true;
     }
+
+  
 };
 
 document.onkeyup = (e) => {
@@ -110,8 +112,24 @@ function canvasMovement(){
     if (d) img = imgD;
     
     context.drawImage(img, personajeX, personajeY, size, size);
-    drawHitboxes();
-    // coordinatesDisplay.textContent = `X: ${Math.round(personajeX)}, Y: ${Math.round(personajeY)}`;
+    //Dibujar las hitboxes
+    // drawHitboxes();
+
+    /* ...existing popupText code... */
+
+    if (popupText2) { // New popup for hitbox5
+        // Draw semi-transparent background
+        context.fillStyle = "black";
+        context.fillRect(canvas.width / 2-55, canvas.height / 2-80, 210, 160);
+        context.font = "30px Arial";
+        context.fillStyle = "white";
+        context.fillText("A casa?", canvas.width / 2-50, (canvas.height / 2)-50);
+        context.fillStyle = "white";
+        context.fillText("Noooooo!!", canvas.width / 2-50, canvas.height / 2);
+        context.fillStyle = "white";
+        context.fillText("Al CASINOO!!!", canvas.width / 2-50,( canvas.height / 2)+50);
+
+    }
 }
 // Define the hitbox coordinates
 const hitbox1 = {
@@ -139,25 +157,48 @@ const hitbox4 = {
     x2: 2000, // Set x2 greater than x1 to define a width
     y2: 190
 };
+// Correct hitbox5 coordinates
+const hitbox5 = {
+    x1: 696,
+    y1: 0,    // Set y1 to a lower value
+    x2: 775,
+    y2: 100   // Set y2 to a higher value
+};
 
-// Add debug logs for hitbox4
+// Add a flag to track if the message has been shown
+let hitbox5Collided = false;
+
+// Add a flag to control the popup display for hitbox5
+let popupText2 = false; // New flag for hitbox5 popup
+
 function isColliding(x, y, size, hitboxes) {
     // Calcular la posición de la parte inferior central del personaje
     const bottomX = x + size / 2;
     const bottomY = y + size;
 
-    return hitboxes.some(hitbox => {
+    let collidedHitbox = null;
+
+    hitboxes.some(hitbox => {
         const collision = (
             bottomX >= hitbox.x1 &&
             bottomX <= hitbox.x2 &&
             bottomY >= hitbox.y1 &&
             bottomY <= hitbox.y2
         );
-        if (hitbox === hitbox4) {
-            console.log(`Hitbox4 collision: ${collision}`);
+        if (collision) {
+            collidedHitbox = hitbox;
+            if (hitbox === hitbox4) {
+                console.log(`Hitbox4 collision: ${collision}`);
+            }
+            if (hitbox === hitbox5) {
+                console.log(`Hitbox5 collision: ${collision}`);
+            }
+            return true; // Exit the loop once a collision is found
         }
-        return collision;
+        return false;
     });
+
+    return collidedHitbox;
 }
 
 function checkMove(){
@@ -183,7 +224,7 @@ function checkMove(){
     }
     
     size = personajeY * 1; // Adjust size based on Y position
-72
+
     if ((personajeX < 505 && personajeX > 436) && personajeY === 50) {
         window.location.href = '../html/casino.html';
     }
@@ -192,11 +233,24 @@ function checkMove(){
     const bottomX = newX + size / 2;
     const bottomY = newY + size;
 
-   
     // Verificar colisión solo con la parte inferior
-    const collision = isColliding(newX, newY, size, [hitbox1, hitbox2, hitbox3, hitbox4]);
+    const collidedHitbox = isColliding(newX, newY, size, [hitbox1, hitbox2, hitbox3, hitbox4, hitbox5]);
 
-    if (!collision) {
+    if (collidedHitbox) {
+        if (collidedHitbox === hitbox5 && !hitbox5Collided) {
+            // Mostrar popup al colisionar con hitbox5
+            popupText2 = true;
+            hitbox5Collided = true; // Evita que el popup se muestre repetidamente
+        }
+    } else {
+        // Reset the flag when not colliding
+        if (popupText2) {
+            popupText2 = false;
+        }
+        hitbox5Collided = false;
+    }
+
+    if (!collidedHitbox) {
         personajeX = newX;
         personajeY = newY;
     }
@@ -215,6 +269,8 @@ function drawHitboxes() {
     context.strokeRect(hitbox3.x1, hitbox3.y1, hitbox3.x2 - hitbox3.x1, hitbox3.y2 - hitbox3.y1);
     // Draw hitbox4
     context.strokeRect(hitbox4.x1, hitbox4.y1, hitbox4.x2 - hitbox4.x1, hitbox4.y2 - hitbox4.y1);
+    // Draw hitbox5
+    context.strokeRect(hitbox5.x1, hitbox5.y1, hitbox5.x2 - hitbox5.x1, hitbox5.y2 - hitbox5.y1);
 }
 
 setInterval(()=>{checkMove();}, 20);

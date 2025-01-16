@@ -1,5 +1,5 @@
 *{
-    background-image:url(../multimedia/img/ruleta.png);
+    background-image:url(../multimedia/img/ruleta2.png);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -9,12 +9,14 @@
 
 body {    
     overflow: hidden;
+    margin: 0; /* Remove default margin to align the canvas properly */
 }
 
 canvas {
     display: block;
     width: 100%;
     height: 100%;
+    position: relative;
 }
 
 /* Eliminar estilos para .draggable-image si ya no se requiere */
@@ -31,8 +33,11 @@ canvas {
 
 /* Add z-index to ensure coordinates are visible */
 #coordinates {
-    z-index: 1;
+    z-index: 2;
     position: absolute; /* Ensure position is set */
+    background: rgba(0,0,0,0.5);
+    padding: 5px;
+    border-radius: 5px;
 }
 
 /* Style for the clear button */
@@ -45,3 +50,13 @@ canvas {
 #clearButton:hover {
     transform: scale(1.1);
 }
+
+/* Optionally, style for chips if using HTML elements */
+/*
+.chip {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    position: absolute;
+}
+*/
