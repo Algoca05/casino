@@ -66,45 +66,51 @@ let lastRandomNumber = null;
 // Add a variable to store the user's wallet balance
 let wallet = 1134; // Initial balance
 
-// Define the grid numbers with their positions
+// Variables para manejar la desactivación de la interacción del usuario
+let isInteractionDisabled = false;
+let spinStartTime = null; // Variable to store the start time of the spin
+
+// Define the grid numbers with their positions and initial total values
 const gridNumbers = [
-    { number: 0, x: 930, y: 450 },
-    { number: 1, x: 1010, y: 620 },
-    { number: 2, x: 1010, y: 450 },
-    { number: 3, x: 1010, y: 280 },
-    { number: 4, x: 1080, y: 620 },
-    { number: 5, x: 1080, y: 450 },
-    { number: 6, x: 1080, y: 280 },
-    { number: 7, x: 1150, y: 620 },
-    { number: 8, x: 1150, y: 450 },
-    { number: 9, x: 1150, y: 280 },
-    { number: 10, x: 1220, y: 620 },
-    { number: 11, x: 1220, y: 450 },
-    { number: 12, x: 1220, y: 280 },
-    { number: 13, x: 1290, y: 620 },
-    { number: 14, x: 1290, y: 450 },
-    { number: 15, x: 1290, y: 280 },
-    { number: 16, x: 1360, y: 620 },
-    { number: 17, x: 1360, y: 450 },
-    { number: 18, x: 1360, y: 280 },
-    { number: 19, x: 1430, y: 620 },
-    { number: 20, x: 1430, y: 450 },
-    { number: 21, x: 1430, y: 280 },
-    { number: 22, x: 1500, y: 620 },
-    { number: 23, x: 1500, y: 450 },
-    { number: 24, x: 1500, y: 280 },
-    { number: 25, x: 1570, y: 620 },
-    { number: 26, x: 1570, y: 450 },
-    { number: 27, x: 1570, y: 280 },
-    { number: 28, x: 1640, y: 620 },
-    { number: 29, x: 1640, y: 450 },
-    { number: 30, x: 1640, y: 280 },
-    { number: 31, x: 1710, y: 620 },
-    { number: 32, x: 1710, y: 450 },
-    { number: 33, x: 1710, y: 280 },
-    { number: 34, x: 1780, y: 620 },
-    { number: 35, x: 1780, y: 450 },
-    { number: 36, x: 1780, y: 280 }
+    { number: 0, x: 930, y: 450, totalValue: 0 },
+    { number: 0, x: 940, y: 620, totalValue: 0 },
+    { number: 0, x: 940, y: 280, totalValue: 0 },
+    { number: 1, x: 1010, y: 620, totalValue: 0 },
+    { number: 2, x: 1010, y: 450, totalValue: 0 },
+    { number: 3, x: 1010, y: 280, totalValue: 0 },
+    { number: 4, x: 1080, y: 620, totalValue: 0 },
+    { number: 5, x: 1080, y: 450, totalValue: 0 },
+    { number: 6, x: 1080, y: 280, totalValue: 0 },
+    { number: 7, x: 1150, y: 620, totalValue: 0 },
+    { number: 8, x: 1150, y: 450, totalValue: 0 },
+    { number: 9, x: 1150, y: 280, totalValue: 0 },
+    { number: 10, x: 1220, y: 620, totalValue: 0 },
+    { number: 11, x: 1220, y: 450, totalValue: 0 },
+    { number: 12, x: 1220, y: 280, totalValue: 0 },
+    { number: 13, x: 1290, y: 620, totalValue: 0 },
+    { number: 14, x: 1290, y: 450, totalValue: 0 },
+    { number: 15, x: 1290, y: 280, totalValue: 0 },
+    { number: 16, x: 1360, y: 620, totalValue: 0 },
+    { number: 17, x: 1360, y: 450, totalValue: 0 },
+    { number: 18, x: 1360, y: 280, totalValue: 0 },
+    { number: 19, x: 1430, y: 620, totalValue: 0 },
+    { number: 20, x: 1430, y: 450, totalValue: 0 },
+    { number: 21, x: 1430, y: 280, totalValue: 0 },
+    { number: 22, x: 1500, y: 620, totalValue: 0 },
+    { number: 23, x: 1500, y: 450, totalValue: 0 },
+    { number: 24, x: 1500, y: 280, totalValue: 0 },
+    { number: 25, x: 1570, y: 620, totalValue: 0 },
+    { number: 26, x: 1570, y: 450, totalValue: 0 },
+    { number: 27, x: 1570, y: 280, totalValue: 0 },
+    { number: 28, x: 1640, y: 620, totalValue: 0 },
+    { number: 29, x: 1640, y: 450, totalValue: 0 },
+    { number: 30, x: 1640, y: 280, totalValue: 0 },
+    { number: 31, x: 1710, y: 620, totalValue: 0 },
+    { number: 32, x: 1710, y: 450, totalValue: 0 },
+    { number: 33, x: 1710, y: 280, totalValue: 0 },
+    { number: 34, x: 1780, y: 620, totalValue: 0 },
+    { number: 35, x: 1780, y: 450, totalValue: 0 },
+    { number: 36, x: 1780, y: 280, totalValue: 0 }
 ];
 
 // Clase para representar una ficha (chip) en el canvas
@@ -159,16 +165,23 @@ document.addEventListener('DOMContentLoaded', () => {
             context.drawImage(chip.img, chip.x - chip.size / 2, chip.y - chip.size / 2, chip.size, chip.size);
         });
 
-        // Dibujar la cuadrícula de números
+        // Dibujar la cuadrícula de números y sus valores totales
         gridNumbers.forEach(num => {
-            context.fillStyle = 'white';
-            context.font = '16px Arial';
-            context.textAlign = 'center';
-            context.fillText(num.number, num.x, num.y);
+            // context.fillStyle = 'white';
+            // context.font = '16px Arial';
+            // context.textAlign = 'center';
+            // context.fillText(num.number, num.x, num.y);
             // Dibujar rectángulos alrededor de los números
             context.beginPath();
-            context.rect(num.x - 20, num.y - 55, 40, 110);
-            context.stroke();
+            context.rect(num.x - 32.5, num.y - 87.5, 65, 170);
+            // context.stroke();
+
+            // Dibujar el valor total de las fichas en cada número
+            if (num.totalValue > 0) {
+                context.fillStyle = 'yellow';
+                context.font = '14px Arial';
+                context.fillText(`Total: ${num.totalValue}`, num.x-25, num.y + 20);
+            }
         });
 
         // Dibujar el número aleatorio si existe
@@ -188,16 +201,36 @@ document.addEventListener('DOMContentLoaded', () => {
         // Manejar la desaceleración del giro
         if (isSpinning) {
             rotationSpeed *= DECELERATION;
-            if (rotationSpeed < MIN_SPEED) {
+            const currentTime = Date.now();
+            const elapsedTime = (currentTime - spinStartTime) / 1000; // Calculate elapsed time in seconds
+
+            if (rotationSpeed < MIN_SPEED && elapsedTime >= 10) { // Ensure the spin lasts at least 10 seconds
                 isSpinning = false;
                 rotationSpeed = 0;
                 // Generar y asignar número aleatorio
                 lastRandomNumber = Math.floor(Math.random() * 37);
                 console.log(`Número aleatorio: ${lastRandomNumber}`);
                 
-                // Clear all placed chips after spinning
-                chips = [];
-                console.log('Todas las fichas han sido eliminadas tras el giro.');
+                // Calculate winnings based on the random number
+                const winningNumber = gridNumbers.find(num => num.number === lastRandomNumber);
+                if (winningNumber) {
+                    const winnings = winningNumber.totalValue * 36;
+                    wallet += winnings;
+                    console.log(`Ganancias: ${winnings}. Nuevo saldo: ${wallet}`);
+                }
+
+                // Disable user interactions
+                isInteractionDisabled = true;
+
+                // Wait for 5 seconds before clearing all placed chips and resetting total values
+                setTimeout(() => {
+                    chips = [];
+                    gridNumbers.forEach(num => num.totalValue = 0);
+                    console.log('Todas las fichas han sido eliminadas tras el giro.');
+
+                    // Enable user interactions
+                    isInteractionDisabled = false;
+                }, 5000);
             }
         } 
 
@@ -209,6 +242,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Manejar eventos de mouse para drag & drop y colocación de fichas
     canvas.addEventListener('mousedown', (e) => {
+        if (isInteractionDisabled) return; // Prevent interaction if disabled
+
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -228,6 +263,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Limpiar imágenes arrastradas si es necesario
                     canvasImages = canvasImages.filter(img => img.isOriginal || img.value === 'clear');
                     lastRandomNumber = null; // Clear the displayed number
+
+                    // Reset total values for all grid numbers
+                    gridNumbers.forEach(num => num.totalValue = 0);
+
                     console.log(`Todas las apuestas han sido eliminadas. Se han devuelto ${totalReturn} al wallet.`);
                     break;
                 }
@@ -237,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         isSpinning = true;
                         rotationSpeed = Math.random() * 0.1 + 0.05; // Establecer velocidad de rotación aleatoria
                         lastRandomNumber = null; // Clear previous number
+                        spinStartTime = Date.now(); // Record the start time of the spin
                     }
                 }
 
@@ -271,8 +311,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Iniciar el arrastre de la imagen ya arrastrada
                     isDragging = true;
                     draggedImage = clickedImage;
-                    dragOffsetX = x - clickedImage.x;
-                    dragOffsetY = y - clickedImage.y;
+                    dragOffsetX = x - draggedImage.x;
+                    dragOffsetY = y - draggedImage.y;
                 }
                 break;
             }
@@ -282,6 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     canvas.addEventListener('mousemove', (e) => {
+        if (isInteractionDisabled) return; // Prevent interaction if disabled
+
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -299,6 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     canvas.addEventListener('mouseup', (e) => {
+        if (isInteractionDisabled) return; // Prevent interaction if disabled
+
         if (isDragging && draggedImage && typeof draggedImage.value === 'number') {
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -308,13 +352,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const chipData = imagesData.find(data => data.value === chipValue);
             const chipColor = chipData.color;
 
-            if (wallet >= chipValue) {
-                const newChip = new Chip(x, y, 30, chipValue);
-                chips.push(newChip);
-                wallet -= chipValue;
-                console.log(`Ficha colocada: ${chipColor} con valor ${chipValue}`);
+            // Find the grid number based on the coordinates
+            const gridNumber = gridNumbers.find(num => {
+                return x >= num.x - 25 && x <= num.x + 25 && y >= num.y - 82.5 && y <= num.y + 82.5;
+            });
+
+            if (gridNumber) {
+                if (wallet >= chipValue) {
+                    const newChip = new Chip(gridNumber.x, gridNumber.y, 30, chipValue);
+                    chips.push(newChip);
+                    wallet -= chipValue;
+                    gridNumber.totalValue += chipValue; // Update the total value for the grid number
+                    console.log(`Ficha colocada en el número ${gridNumber.number}: ${chipColor} con valor ${chipValue}`);
+                } else {
+                    console.log('Saldo insuficiente para colocar esta ficha.');
+                }
             } else {
-                console.log('Saldo insuficiente para colocar esta ficha.');
+                console.log('La ficha no se colocó en un número válido.');
             }
 
             // Reset the dragged chip's position to its initial coordinates
