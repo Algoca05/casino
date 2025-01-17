@@ -64,7 +64,7 @@ const MIN_SPEED = 0.05;
 let lastRandomNumber = null;
 
 // Add a variable to store the user's wallet balance
-let wallet = 1134; // Initial balance
+let wallet = localStorage.getItem('wallet') ? parseInt(localStorage.getItem('wallet')) : 1134; // Initial balance
 
 // Variables para manejar la desactivación de la interacción del usuario
 let isInteractionDisabled = false;
@@ -193,10 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Dibujar la cartera del usuario
-        context.fillStyle = 'yellow';
-        context.font = '24px Arial';
-        context.textAlign = 'left';
-        context.fillText(`Wallet: ${wallet}`, 20, canvas.height - 20); // Bottom-left corner
+        updateWalletDisplay();
 
         // Manejar la desaceleración del giro
         if (isSpinning) {
@@ -268,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     gridNumbers.forEach(num => num.totalValue = 0);
 
                     console.log(`Todas las apuestas han sido eliminadas. Se han devuelto ${totalReturn} al wallet.`);
+                    localStorage.setItem('wallet', wallet); // Save wallet balance to localStorage
                     break;
                 }
 
@@ -364,6 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     wallet -= chipValue;
                     gridNumber.totalValue += chipValue; // Update the total value for the grid number
                     console.log(`Ficha colocada en el número ${gridNumber.number}: ${chipColor} con valor ${chipValue}`);
+                    localStorage.setItem('wallet', wallet); // Save wallet balance to localStorage
                 } else {
                     console.log('Saldo insuficiente para colocar esta ficha.');
                 }
@@ -387,6 +386,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   
 });
+
+function updateWalletDisplay() {
+    context.fillStyle = 'yellow';
+    context.font = '24px Arial';
+    context.textAlign = 'left';
+    context.fillText(`Wallet: ${wallet}`, 20, canvas.height - 20); // Bottom-left corner
+    localStorage.setItem('wallet', wallet); // Save wallet balance to localStorage
+}
 
 
 

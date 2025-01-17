@@ -48,7 +48,8 @@ imgA.onload = imageLoaded;
 imgS.onload = imageLoaded;
 imgD.onload = imageLoaded;
 
-
+// Add a variable to store the user's wallet balance
+let wallet = localStorage.getItem('wallet') ? parseInt(localStorage.getItem('wallet')) : 1134; // Initial balance
 
 //Control del tiempo
 let teclaPresionada = false;
@@ -103,6 +104,14 @@ canvas.addEventListener('mousemove', (event) => {
     coordinatesDisplay.textContent = `X: ${Math.round(mouseX)}, Y: ${Math.round(mouseY)}`;
 });
 
+function updateWalletDisplay() {
+    context.fillStyle = 'yellow';
+    context.font = '24px Arial';
+    context.textAlign = 'left';
+    context.fillText(`Wallet: ${wallet}`, 20, canvas.height - 20); // Bottom-left corner
+    localStorage.setItem('wallet', wallet); // Save wallet balance to localStorage
+}
+
 function canvasMovement(){
     clearCanvas();
     let img = imgNone;
@@ -130,6 +139,9 @@ function canvasMovement(){
         context.fillText("Al CASINOO!!!", canvas.width / 2-50,( canvas.height / 2)+50);
 
     }
+
+    // Draw the user's wallet balance
+    updateWalletDisplay();
 }
 // Define the hitbox coordinates
 const hitbox1 = {
